@@ -1362,6 +1362,20 @@
     </div>
 
     <script>
+        // Pré-carregar imagens do microscópio assim que a página carregar
+        (function preloadMicroscopeImages() {
+            const microscopeImages = [
+                'IMG/bacmic.webp',
+                'IMG/bacmic-real.webp',
+                'IMG/bacmic-real-z.webp'
+            ];
+            
+            microscopeImages.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        })();
+
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const totalSlides = slides.length;
