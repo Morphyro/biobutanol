@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioconversão de Biomassa em Biobutanol</title>
+    <!-- Preload das imagens para evitar erros de carregamento -->
+    <link rel="preload" as="image" href="IMG/bac.webp">
+    <link rel="preload" as="image" href="IMG/bacmic.webp">
+    <link rel="preload" as="image" href="IMG/bacmic-real.webp">
+    <link rel="preload" as="image" href="IMG/bacmic-real-z.webp">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1f2e 0%, #0d3d3d 50%, #0a2e1f 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Permitir seleção apenas em inputs e textareas se necessário */
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        /* Desabilitar seleção de imagens e ícones */
+        img, .bacteria-icon, .bacteria-colony, .petri-dish {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            pointer-events: auto;
+        }
+
+        /* Prevenir arrastar imagens */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+        }
+
+        /* Mobile: Scroll Layout */
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            .container {
+                display: block;
+                padding-bottom: 40px;
+            }
+
+            .slide {
+                display: block !important;
+                min-height: auto;
+                padding: 30px 20px;
+                margin-bottom: 0;
+                background: linear-gradient(135deg, rgba(10, 61, 46, 0.95) 0%, rgba(13, 61, 61, 0.95) 100%);
+                border: none;
+                border-bottom: 3px solid rgba(46, 204, 113, 0.3);
+                animation: none;
+            }
+
+            .controls {
+                display: none;
+            }
+
+            .slide-counter {
+                display: none;
+            }
+
+            .scroll-indicator {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: #2ecc71;
+                font-size: 2rem;
+                animation: none;
+                z-index: 100;
+            }
+        }
+
+        /* Desktop: Slide Layout */
+        @media (min-width: 769px) {
+            body {
+                overflow: hidden;
+            }
+
+            .container {
+                max-width: 100vw;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                position: relative;
+            }
+
+            .slide {
+                display: none;
+                height: 100vh;
+                max-height: 100vh;
+                padding: 20px 25px;
+                position: relative;
+                background: linear-gradient(135deg, rgba(10, 61, 46, 0.95) 0%, rgba(13, 61, 61, 0.95) 100%);
+                border: 3px solid #2ecc71;
+                box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+                animation: slideIn 0.6s ease;
+                overflow: hidden;
+            }
+
+            .slide.active {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .scroll-indicator {
+                display: none;
+            }
+
+            .controls {
+                display: flex;
+            }
+
+            .slide-counter {
+                display: block;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #2ecc71;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(46, 204, 113, 0.6);
+            line-height: 1.3;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        @media (min-width: 769px) {
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 6px;
+            }
+        }
+
+        h2 {
+            color: #52de97;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            margin-top: 20px;
+            text-shadow: 0 0 10px rgba(82, 222, 151, 0.5);
+            font-weight: 600;
+        }
+
+        @media (min-width: 769px) {
+            h2 {
+                font-size: 1.1rem;
+                margin-bottom: 5px;
+                margin-top: 8px;
+            }
+        }
+
+        h3 {
+            color: #6ee7b7;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            margin-top: 12px;
+        }
+
+        @media (min-width: 769px) {
+            h3 {
+                font-size: 0.95rem;
+                margin-bottom: 4px;
+                margin-top: 6px;
+            }
+        }
+
+        p, li {
+            color: #d1d5db;
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        @media (min-width: 769px) {
+            p, li {
+                font-size: 0.8rem;
+                margin-bottom: 3px;
+                line-height: 1.35;
+            }
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        li {
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 12px;
+            transition: transform 0.2s;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (min-width: 769px) {
+            li {
+                margin-bottom: 2px;
+                padding-left: 22px;
+                font-size: 0.8rem;
+            }
+            
+            li:before {
+                font-size: 1rem;
+            }
+        }
+
+        li:hover {
+            transform: translateX(5px);
+        }
+
+        li:before {
+            content: attr(data-emoji);
+            position: absolute;
+            left: 0;
+            font-size: 1.2rem;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        li:not([data-emoji]):before {
+            content: "🦠";
+        }
+
+        li:before:hover {
+            transform: scale(1.2);
+            transition: transform 0.2s;
+        }
+
+        .bacteria-icon {
+            font-size: 4rem;
+            margin: 20px 0;
+            animation: float 3s ease-in-out infinite;
+            text-align: center;
+        }
+
+        @media (min-width: 769px) {
+            .bacteria-icon {
+                font-size: 1.5rem;
+                margin: 4px 0;
+            }
+            
+            .bacteria-icon[src] {
+                width: 120px !important;
+                height: 120px !important;
+            }
+        }
+
+        /* Desabilitar animações no mobile, exceto dos icons e imagens do microscópio */
+        @media (max-width: 768px) {
+            .petri-dish,
+            .bacteria-colony {
+                animation: none !important;
+            }
+
+            .microscope-modal {
+                animation: none !important;
+            }
+
+            .scroll-indicator {
+                animation: none !important;
+            }
+
+            /* Desabilitar todos os efeitos hover no mobile */
+            li:hover,
+            li:before:hover,
+            button:hover:not(:disabled),
+            .card:hover,
+            .process-step:hover,
+            .microscope-toggle-btn:hover,
+            .microscope-zoom-btn:hover,
+            .microscope-close:hover,
+            .bacteria-icon:hover {
+                transform: none !important;
+                box-shadow: inherit !important;
+                background: inherit !important;
+                border-color: inherit !important;
+                opacity: inherit !important;
+            }
+
+            /* Desabilitar transições no mobile para melhor performance */
+            li,
+            button,
+            .card,
+            .process-step,
+            .microscope-toggle-btn,
+            .microscope-zoom-btn,
+            .microscope-close,
+            .bacteria-icon {
+                transition: none !important;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .equation {
+            background: rgba(46, 204, 113, 0.15);
+            border: 2px solid rgba(46, 204, 113, 0.6);
+            border-radius: 10px;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'Courier New', monospace;
+            color: #6ee7b7;
+            text-align: center;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2);
+        }
+
+        @media (min-width: 769px) {
+            .equation {
+                padding: 6px;
+                margin: 5px 0;
+                font-size: 0.75rem;
+            }
+        }
+
+        .highlight {
+            background: rgba(46, 204, 113, 0.15);
+            padding: 18px;
+            border-radius: 12px;
+            border-left: 4px solid #2ecc71;
+            margin: 18px 0;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2);
+        }
+
+        @media (min-width: 769px) {
+            .highlight {
+                padding: 8px;
+                margin: 5px 0;
+            }
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        @media (min-width: 769px) {
+            .controls {
+                display: flex;
+                bottom: 20px;
+            }
+        }
+
+        button {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        @media (min-width: 769px) {
+            button {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.6);
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            border: 2px solid #2ecc71;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            font-size: 0.95rem;
+        }
+
+        @media (min-width: 769px) {
+            .slide-counter {
+                top: 15px;
+                right: 15px;
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .content-wrapper {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        @media (min-width: 769px) {
+            .content-wrapper {
+                max-width: 850px;
+                padding: 0 20px 70px 20px;
+                max-height: calc(100vh - 30px);
+                overflow: hidden;
+            }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            margin: 20px 0;
+        }
+
+        @media (min-width: 769px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                margin: 6px 0;
+            }
+        }
+
+        .card {
+            background: rgba(46, 204, 113, 0.12);
+            border: 2px solid rgba(46, 204, 113, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.4s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (min-width: 769px) {
+            .card {
+                padding: 8px;
+            }
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(46, 204, 113, 0.4);
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.18);
+        }
+
+        .petri-dish {
+            width: 100px;
+            height: 100px;
+            border: 3px solid #2ecc71;
+            border-radius: 50%;
+            position: relative;
+            margin: 20px auto;
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.15) 0%, rgba(46, 204, 113, 0.35) 100%);
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 25px rgba(46, 204, 113, 0.4);
+        }
+
+        @media (min-width: 769px) {
+            .petri-dish {
+                width: 90px;
+                height: 90px;
+                margin: 15px auto;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.85; }
+        }
+
+        .bacteria-colony {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #2ecc71;
+            border-radius: 50%;
+            animation: grow 3s infinite;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.8);
+        }
+
+        .bacteria-colony:nth-child(1) { top: 20%; left: 30%; animation-delay: 0s; }
+        .bacteria-colony:nth-child(2) { top: 60%; left: 50%; animation-delay: 0.5s; }
+        .bacteria-colony:nth-child(3) { top: 40%; left: 70%; animation-delay: 1s; }
+        .bacteria-colony:nth-child(4) { top: 70%; left: 25%; animation-delay: 1.5s; }
+
+        @keyframes grow {
+            0%, 100% { transform: scale(0.7); opacity: 0.6; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        .intro-section {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        @media (min-width: 769px) {
+            .intro-section {
+                padding: 5px 0;
+            }
+            
+            .intro-section .highlight {
+                margin-top: 8px !important;
+            }
+            
+            /* Reduzir espaçamentos inline no desktop */
+            [style*="margin-top: 40px"] {
+                margin-top: 8px !important;
+            }
+            
+            [style*="margin-top: 30px"] {
+                margin-top: 6px !important;
+            }
+            
+            [style*="margin-top: 25px"] {
+                margin-top: 5px !important;
+            }
+            
+            [style*="margin-top: 20px"] {
+                margin-top: 4px !important;
+            }
+            
+            [style*="margin-top: 15px"] {
+                margin-top: 4px !important;
+            }
+            
+            [style*="margin-top: 10px"] {
+                margin-top: 3px !important;
+            }
+            
+            /* Ajustar imagens do butanol no desktop */
+            img[src="IMG/Butanol_flat.png"],
+            img[src="IMG/butanol-linha.png"] {
+                max-width: 250px !important;
+            }
+            
+            div[style*="flex-direction: column"] img {
+                max-width: 250px !important;
+            }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #6ee7b7;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        @media (min-width: 769px) {
+            .subtitle {
+                font-size: 0.85rem;
+                margin-top: 4px;
+            }
+        }
+
+        .process-step {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid #2ecc71;
+            padding: 18px;
+            margin: 12px 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        @media (min-width: 769px) {
+            .process-step {
+                padding: 8px;
+                margin: 4px 0;
+            }
+        }
+
+        .process-step:hover {
+            background: rgba(46, 204, 113, 0.18);
+            transform: translateX(10px);
+        }
+
+        .process-step h3 {
+            margin-top: 0;
+            color: #2ecc71;
+        }
+
+        @media (min-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.15rem; }
+            p, li { font-size: 1rem; }
+            .bacteria-icon { font-size: 4rem; }
+        }
+        
+        /* Aplicar margin-top negativo apenas ao h2 de Vantagens */
+        @media (min-width: 768px) {
+            .vantagens-h2 {
+                margin-top: -40px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.25rem; }
+            h3 { font-size: 1.05rem; }
+            .slide { padding: 20px 30px; }
+            .content-wrapper {
+                max-width: 950px;
+            }
+        }
+
+        strong {
+            color: #2ecc71;
+            font-weight: 600;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        @media (min-width: 769px) {
+            .stats {
+                gap: 8px;
+                margin: 8px 0;
+            }
+        }
+
+        .stat-item {
+            background: rgba(46, 204, 113, 0.15);
+            padding: 16px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            min-width: 130px;
+            border: 2px solid rgba(46, 204, 113, 0.4);
+        }
+
+        @media (min-width: 769px) {
+            .stat-item {
+                padding: 6px;
+                min-width: 80px;
+            }
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            color: #2ecc71;
+            font-weight: 700;
+            display: block;
+        }
+
+        @media (min-width: 769px) {
+            .stat-number {
+                font-size: 1.1rem;
+            }
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-top: 5px;
+        }
+
+        /* Modal de Microscópio */
+        .microscope-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .microscope-modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .microscope-modal-content {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            overflow: visible;
+            box-shadow: 
+                0 0 0 25px rgba(0, 0, 0, 0.9),
+                0 0 0 50px rgba(0, 0, 0, 0.7),
+                0 0 80px rgba(0, 0, 0, 1),
+                inset 0 0 40px rgba(0, 0, 0, 0.4);
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%);
+        }
+
+        .microscope-modal-content::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at center, transparent 45%, rgba(0, 0, 0, 0.4) 50%, transparent 55%),
+                radial-gradient(circle at center, transparent 48%, rgba(0, 0, 0, 0.15) 49%, transparent 51%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .microscope-image-container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 50%;
+            position: relative;
+            cursor: grab;
+        }
+
+        .microscope-image-container:active {
+            cursor: grabbing;
+        }
+
+        .microscope-modal-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            filter: contrast(1.15) brightness(0.9);
+            transition: transform 0.3s ease, filter 0.3s ease;
+            transform-origin: center center;
+        }
+
+        .microscope-modal-content img.zoomed {
+            animation: none;
+        }
+
+        .microscope-modal-content img.transitioning {
+            filter: blur(3px) contrast(1.15) brightness(0.9);
+        }
+
+        .microscope-controls {
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .microscope-toggle-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+            -webkit-tap-highlight-color: rgba(46, 204, 113, 0.3);
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .microscope-toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.6);
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .microscope-zoom-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .microscope-zoom-btn {
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.5);
+            transition: all 0.3s;
+            -webkit-tap-highlight-color: rgba(46, 204, 113, 0.3);
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .microscope-zoom-btn:hover {
+            background: rgba(46, 204, 113, 1);
+            transform: scale(1.1);
+        }
+
+        .microscope-zoom-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .microscope-zoom-indicator {
+            color: #2ecc71;
+            font-size: 0.9rem;
+            font-weight: 600;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .microscope-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.5);
+            transition: all 0.3s;
+        }
+
+        .microscope-close:hover {
+            background: rgba(46, 204, 113, 1);
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.7);
+        }
+
+
+        @keyframes microscopeFocus {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 0 25px rgba(0, 0, 0, 0.9),
+                    0 0 0 50px rgba(0, 0, 0, 0.7),
+                    0 0 80px rgba(0, 0, 0, 1),
+                    inset 0 0 40px rgba(0, 0, 0, 0.4);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 0 25px rgba(0, 0, 0, 0.95),
+                    0 0 0 50px rgba(0, 0, 0, 0.75),
+                    0 0 90px rgba(46, 204, 113, 0.3),
+                    inset 0 0 45px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        @keyframes slideMicroscope {
+            0%, 100% { transform: scale(1) translate(0, 0); }
+            25% { transform: scale(1.05) translate(-3px, -3px); }
+            50% { transform: scale(1.02) translate(3px, 3px); }
+            75% { transform: scale(1.05) translate(-2px, 2px); }
+        }
+
+        @media (max-width: 768px) {
+            .microscope-modal-content {
+                width: 350px;
+                height: 350px;
+                box-shadow: 
+                    0 0 0 20px rgba(0, 0, 0, 0.9),
+                    0 0 0 40px rgba(0, 0, 0, 0.7),
+                    0 0 60px rgba(0, 0, 0, 1),
+                    inset 0 0 30px rgba(0, 0, 0, 0.4);
+            }
+
+            .microscope-close {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+                top: -15px;
+                right: 15px;
+            }
+
+            .microscope-controls {
+                bottom: -140px;
+            }
+
+            .microscope-toggle-btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+
+            .microscope-zoom-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .microscope-modal-content {
+                width: 450px;
+                height: 450px;
+            }
+        }
+
+        .bacteria-icon {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .bacteria-icon:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body onselectstart="return false" oncopy="return false" oncut="return false" onpaste="return false">
+    <div class="container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">8</span>
+        </div>
+
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <div class="content-wrapper intro-section">
+                <h1>Bioconversão de Biomassa em Biobutanol</h1>
+                <p class="subtitle">Utilizando <em>Clostridium acetobutylicum</em></p>
+                <div class="highlight" style="margin-top: 40px;">
+                    <p style="font-size: 1.1rem; text-align: center;">Uma alternativa sustentável e promissora para a produção de biocombustíveis avançados</p>
+                </div>
+                <p style="text-align: center; margin-top: 20px; color: #6ee7b7; font-size: 0.9rem;">Morphyro - S1N - 2025</p>
+                
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <h1>O que é Biobutanol?</h1>
+                <div class="bacteria-icon" style="font-size: 3rem;">⚗️</div>
+                <div class="highlight">
+                    <p><strong>Biobutanol (C₄H₉OH)</strong> é um álcool de cadeia com quatro carbonos produzido através da fermentação anaeróbica de biomassa. É considerado um biocombustível de segunda geração com propriedades superiores ao etanol.</p>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <img src="IMG/Butanol_flat.png" alt="Estrutura plana do Butanol" style="max-width: 300px; height: auto; object-fit: contain; margin-top: 20px;">
+                    <img src="IMG/butanol-linha.png" alt="Estrutura em linha do Butanol" style="max-width: 300px; height: auto; object-fit: contain;">
+                </div>
+                
+                <h2 class="vantagens-h2">Vantagens Comparativas ao Etanol:</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-number">+30%</span>
+                        <span class="stat-label">Densidade Energética</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">85%</span>
+                        <span class="stat-label">Mistura Gasolina</span>
+                    </div>
+                </div>
+
+                <ul>
+                    <li data-emoji="⚡">Maior conteúdo energético (aproximadamente 30% superior)</li>
+                    <li data-emoji="🔧">Menos corrosivo para componentes metálicos do motor</li>
+                    <li data-emoji="🔀">Miscibilidade com gasolina em proporções maiores</li>
+                    <li data-emoji="💧">Propriedade hidrofóbica - não absorve umidade do ar</li>
+                    <li data-emoji="🏭">Compatível com infraestrutura de distribuição existente</li>
+                    <li data-emoji="🛡️">Menor pressão de vapor - mais seguro para armazenamento</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <h1><em>Clostridium acetobutylicum</em></h1>
+                <div style="text-align: center; margin: 20px 0;">
+                    <img src="IMG/bac.webp" alt="Bactéria" class="bacteria-icon" style="cursor: pointer; width: 180px; height: 180px; object-fit: contain;" onclick="openMicroscopeModal()" title="Clique para ver ao microscópio">
+                </div>
+                
+                <h2>Características Microbiológicas:</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3>Morfologia</h3>
+                        <ul>
+                            <li data-emoji="🔬">Bacilo Gram-positivo</li>
+                            <li data-emoji="🌑">Anaeróbico estrito</li>
+                            <li data-emoji="🍄">Formador de esporos</li>
+                            <li data-emoji="🏃">Móvel (flagelos)</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Metabolismo</h3>
+                        <ul>
+                            <li data-emoji="🍬">Fermentação de hexoses</li>
+                            <li data-emoji="🍯">Fermentação de pentoses</li>
+                            <li data-emoji="🧪">Produção de solventes</li>
+                            <li data-emoji="🧬">Tolerância a pH ácido</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <h3>Histórico Científico</h3>
+                    <p><strong>Descoberta:</strong> Chaim Weizmann isolou a bactéria em 1912 enquanto buscava uma forma de produzir acetona para fabricação de cordite (explosivo) durante a Primeira Guerra Mundial.</p>
+                    <p style="margin-top: 10px;"><strong>Importância Industrial:</strong> O processo foi amplamente utilizado entre 1916-1960, conhecido como "Fermentação Weizmann", antes de ser substituído por processos petroquímicos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <h1>Fermentação ABE</h1>
+                <div class="bacteria-icon" style="font-size: 3rem;">⚗️</div>
+                <p style="text-align: center; font-size: 1.1rem; margin-bottom: 30px;">Processo Acetona-Butanol-Etanol</p>
+                
+                <div class="highlight">
+                    <p>A fermentação ABE é um processo bifásico onde <em>C. acetobutylicum</em> converte carboidratos em uma mistura de solventes com predominância de butanol.</p>
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <h2>Fase Acidogênica</h2>
+                        <h3>Crescimento Exponencial</h3>
+                        <p><strong>Produtos principais:</strong></p>
+                        <ul>
+                            <li data-emoji="🧪">Ácido acético (CH₃COOH)</li>
+                            <li data-emoji="🧪">Ácido butírico (C₄H₈O₂)</li>
+                            <li data-emoji="💨">Hidrogênio (H₂)</li>
+                            <li data-emoji="💨">Dióxido de carbono (CO₂)</li>
+                        </ul>
+                        <div class="equation">pH: 5,0 - 6,0</div>
+                        <p style="margin-top: 15px;">Fase de rápida multiplicação celular e acúmulo de ácidos orgânicos no meio.</p>
+                    </div>
+                    <div class="card">
+                        <h2>Fase Solventogênica</h2>
+                        <h3>Produção de Solventes</h3>
+                        <p><strong>Proporção típica (3:6:1):</strong></p>
+                        <ul>
+                            <li data-emoji="🟢">Butanol: 60-70%</li>
+                            <li data-emoji="🟡">Acetona: 25-30%</li>
+                            <li data-emoji="🔵">Etanol: 5-10%</li>
+                        </ul>
+                        <div class="equation">pH: 4,0 - 4,5</div>
+                        <p style="margin-top: 15px;">Reassimilação dos ácidos e conversão em solventes. Fase crítica para rendimento de butanol.</p>
+                    </div>
+                </div>
+
+                <div class="equation" style="margin-top: 25px;">
+                    C₆H₁₂O₆ → 0,3 Acetona + 0,6 Butanol + 0,1 Etanol + 2 CO₂ + H₂
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <h1>Biomassas Utilizáveis</h1>
+                <div class="bacteria-icon" style="font-size: 3rem;">🌾</div>
+                
+                <h2>Fontes de Carbono para Fermentação:</h2>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h2>Biomassa de 1ª Geração</h2>
+                        <p style="color: #a0a0a0; margin-bottom: 15px;">Matérias-primas ricas em açúcares simples</p>
+                        <ul>
+                            <li data-emoji="🌽">Milho (amido)</li>
+                            <li data-emoji="🌾">Cana-de-açúcar (sacarose)</li>
+                            <li data-emoji="🌾">Trigo (amido)</li>
+                            <li data-emoji="🥕">Beterraba (sacarose)</li>
+                        </ul>
+                        <p style="margin-top: 15px; color: #e67e22;"><strong>Limitação:</strong> Competição com produção de alimentos</p>
+                    </div>
+                    <div class="card">
+                        <h2>Biomassa de 2ª Geração</h2>
+                        <p style="color: #a0a0a0; margin-bottom: 15px;">Resíduos lignocelulósicos</p>
+                        <ul>
+                            <li data-emoji="🌾">Bagaço de cana-de-açúcar</li>
+                            <li data-emoji="🌾">Palha de milho e trigo</li>
+                            <li data-emoji="🌲">Resíduos florestais</li>
+                            <li data-emoji="🌱">Capim-elefante</li>
+                            <li data-emoji="🌾">Casca de arroz</li>
+                        </ul>
+                        <p style="margin-top: 15px; color: #2ecc71;"><strong>Vantagem:</strong> Sustentabilidade e disponibilidade</p>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <h3>Foco em Sustentabilidade</h3>
+                    <p>Biomassas de segunda geração são preferíveis pois:</p>
+                    <ul>
+                        <li data-emoji="🚫">Não competem com a cadeia alimentar</li>
+                        <li data-emoji="♻️">Aproveitam resíduos agroindustriais</li>
+                        <li data-emoji="🌍">Apresentam maior disponibilidade global</li>
+                        <li data-emoji="🔄">Contribuem para economia circular</li>
+                        <li data-emoji="🗑️">Reduzem descarte de resíduos orgânicos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <h1>Etapas do Processo de Produção</h1>
+                <div class="bacteria-icon" style="font-size: 3rem;">🔬</div>
+
+                <div class="process-step">
+                    <h3>1. Pré-tratamento da Biomassa</h3>
+                    <p><strong>Objetivo:</strong> Romper a estrutura lignocelulósica e liberar açúcares fermentescíveis</p>
+                    <p><strong>Métodos:</strong></p>
+                    <ul>
+                        <li data-emoji="🧪">Hidrólise ácida (H₂SO₄ diluído)</li>
+                        <li data-emoji="🧪">Hidrólise alcalina (NaOH)</li>
+                        <li data-emoji="🔬">Hidrólise enzimática (celulases e hemicelulases)</li>
+                        <li data-emoji="💨">Explosão a vapor</li>
+                    </ul>
+                    <p><strong>Produtos:</strong> Glicose, xilose, arabinose e outros açúcares</p>
+                </div>
+
+                <div class="process-step">
+                    <h3>2. Fermentação Anaeróbica</h3>
+                    <p><strong>Condições operacionais:</strong></p>
+                    <ul>
+                        <li data-emoji="🌡️">Temperatura: 30-37°C (ótimo: 35°C)</li>
+                        <li data-emoji="📊">pH inicial: 6,0-6,5</li>
+                        <li data-emoji="🌑">Ausência total de oxigênio</li>
+                        <li data-emoji="⏱️">Tempo: 48-96 horas</li>
+                    </ul>
+                    <p><strong>Processo:</strong> <em>C. acetobutylicum</em> metaboliza os açúcares através das fases acidogênica e solventogênica</p>
+                </div>
+
+                <div class="process-step">
+                    <h3>3. Recuperação e Purificação</h3>
+                    <p><strong>Separação dos produtos:</strong></p>
+                    <ul>
+                        <li data-emoji="⚗️">Destilação fracionada (ponto de ebulição: butanol 117°C)</li>
+                        <li data-emoji="🔬">Pervaporação (remoção seletiva de butanol)</li>
+                        <li data-emoji="🧪">Extração líquido-líquido</li>
+                        <li data-emoji="⚫">Adsorção em carvão ativado</li>
+                    </ul>
+                    <p><strong>Produto final:</strong> Butanol com pureza >99%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <h1>Desafios Técnicos e Soluções</h1>
+                <div class="bacteria-icon" style="font-size: 3rem;">⚠️</div>
+
+                <h2>Principais Limitações do Processo:</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3>❌ Desafios</h3>
+                        <ul>
+                            <li data-emoji="📉">Baixa concentração de butanol (20-30 g/L)</li>
+                            <li data-emoji="☠️">Toxicidade do butanol à célula</li>
+                            <li data-emoji="📊">Baixa produtividade volumétrica</li>
+                            <li data-emoji="💰">Custos de recuperação elevados</li>
+                            <li data-emoji="🚫">Inibição por produtos</li>
+                            <li data-emoji="⚠️">Formação de subprodutos indesejados</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>✅ Estratégias</h3>
+                        <ul>
+                            <li data-emoji="🧬">Engenharia metabólica (CRISPR/Cas9)</li>
+                            <li data-emoji="💨">Remoção in situ (gas stripping)</li>
+                            <li data-emoji="⚗️">Fermentação fed-batch otimizada</li>
+                            <li data-emoji="🔬">Seleção de cepas hiper-produtoras</li>
+                            <li data-emoji="🦠">Co-cultura com outras bactérias</li>
+                            <li data-emoji="🔒">Imobilização celular</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 30px;">Tecnologias Emergentes:</h2>
+                <div class="highlight">
+                    <ul>
+                        <li data-emoji="🧬"><strong>Biologia sintética:</strong> Redesenho de vias metabólicas para maximizar fluxo para butanol</li>
+                        <li data-emoji="⚗️"><strong>Biorreatores avançados:</strong> Sistemas de membrana com remoção contínua de produto</li>
+                        <li data-emoji="🔬"><strong>Modificação genética:</strong> Aumento da tolerância ao butanol (>2% v/v)</li>
+                        <li data-emoji="🔄"><strong>Fermentação consolidada (CBP):</strong> Produção de enzimas e butanol em um único processo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8 -->
+        <div class="slide">
+            <div class="content-wrapper">
+                <h1>Perspectivas Futuras</h1>
+                <div class="bacteria-icon">🚀</div>
+
+                <div class="grid">
+                    <div class="card">
+                        <h2>Avanços em Pesquisa</h2>
+                        <ul>
+                            <li data-emoji="✂️">Edição genética via CRISPR-Cas9</li>
+                            <li data-emoji="🧬">Biologia sintética aplicada</li>
+                            <li data-emoji="🔬">Desenvolvimento de cepas super-produtoras</li>
+                            <li data-emoji="⚗️">Novos sistemas de biorreatores</li>
+                            <li data-emoji="🏭">Integração com biorefinarias</li>
+                            <li data-emoji="💻">Modelagem metabólica computacional</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h2>Aplicações Industriais</h2>
+                        <ul>
+                            <li data-emoji="✈️">Combustível de aviação sustentável (SAF)</li>
+                            <li data-emoji="🚗">Biocombustível para transporte terrestre</li>
+                            <li data-emoji="🧪">Matéria-prima química (butadieno)</li>
+                            <li data-emoji="🌿">Solvente industrial verde</li>
+                            <li data-emoji="⛽">Aditivo para combustíveis</li>
+                            <li data-emoji="⚗️">Intermediário químico</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="stats" style="margin-top: 30px;">
+                    <div class="stat-item">
+                        <span class="stat-number">2030</span>
+                        <span class="stat-label">Meta de Produção Comercial</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">50%</span>
+                        <span class="stat-label">Redução Emissões CO₂</span>
+                    </div>
+                </div>
+
+                <div class="highlight" style="margin-top: 30px;">
+                    <h2>Conclusão</h2>
+                    <p style="font-size: 1.1rem;">O biobutanol produzido por <em>Clostridium acetobutylicum</em> representa uma alternativa promissora e sustentável para biocombustíveis avançados. Com os avanços contínuos em biotecnologia, engenharia metabólica e processos de fermentação, esta tecnologia tem o potencial de contribuir significativamente para a transição energética global e a descarbonização do setor de transportes.</p>
+                </div>
+
+                <div class="highlight" style="background: rgba(46, 204, 113, 0.2); margin-top: 20px;">
+                    <p style="text-align: center; font-weight: 600; color: #2ecc71;">🌱 Futuro Sustentável | 🦠 Biotecnologia Avançada | ⚡ Energia Renovável</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">↓</div>
+
+        <div class="controls">
+            <button id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+            <button id="nextBtn" onclick="changeSlide(1)">Próximo →</button>
+        </div>
+    </div>
+
+    <!-- Modal de Microscópio -->
+    <div id="microscopeModal" class="microscope-modal" onclick="closeMicroscopeModal(event)">
+        <div class="microscope-modal-content" onclick="event.stopPropagation()">
+            <div class="microscope-image-container" id="microscopeImageContainer">
+                <img id="microscopeImage" src="IMG/bacmic.webp" alt="Clostridium acetobutylicum vista ao microscópio">
+            </div>
+            <!-- <button class="microscope-close" onclick="closeMicroscopeModal(event)">×</button> -->
+            <div class="microscope-controls">
+                <button class="microscope-toggle-btn" id="toggleImageBtn" type="button">
+                    Modo Real
+                </button>
+                <div class="microscope-zoom-controls">
+                    <button class="microscope-zoom-btn" id="zoomOutBtn" type="button" title="Diminuir zoom">−</button>
+                    <span class="microscope-zoom-indicator" id="zoomIndicator">100%</span>
+                    <button class="microscope-zoom-btn" id="zoomInBtn" type="button" title="Aumentar zoom">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            if (window.innerWidth > 768) {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (n + totalSlides) % totalSlides;
+                slides[currentSlide].classList.add('active');
+                
+                document.getElementById('currentSlide').textContent = currentSlide + 1;
+                document.getElementById('prevBtn').disabled = currentSlide === 0;
+                document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+            }
+        }
+
+        function changeSlide(direction) {
+            if (window.innerWidth > 768) {
+                showSlide(currentSlide + direction);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (window.innerWidth > 768) {
+                if (e.key === 'ArrowLeft') changeSlide(-1);
+                if (e.key === 'ArrowRight') changeSlide(1);
+            }
+        });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            if (window.innerWidth > 768) {
+                touchStartX = e.changedTouches[0].screenX;
+            }
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (window.innerWidth > 768) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }
+        });
+
+        function handleSwipe() {
+            if (window.innerWidth > 768) {
+                if (touchEndX < touchStartX - 50) changeSlide(1);
+                if (touchEndX > touchStartX + 50) changeSlide(-1);
+            }
+        }
+
+        showSlide(0);
+
+        // Hide scroll indicator after first scroll on mobile
+        let hasScrolled = false;
+        if (window.innerWidth <= 768) {
+            window.addEventListener('scroll', () => {
+                if (!hasScrolled && window.scrollY > 100) {
+                    hasScrolled = true;
+                    const indicator = document.querySelector('.scroll-indicator');
+                    if (indicator) {
+                        indicator.style.opacity = '0';
+                        setTimeout(() => {
+                            indicator.style.display = 'none';
+                        }, 300);
+                    }
+                }
+            });
+        }
+
+        // Variáveis do Modal de Microscópio
+        let currentZoom = 1;
+        let isRealMode = false;
+        let isMaxZoomImage = false; // Controla se está na imagem de zoom máximo
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+        let imagePosition = { x: 0, y: 0 };
+        const MAX_ZOOM_BEFORE_SWITCH = 7; // Zoom máximo antes de trocar para imagem de zoom
+        const MAX_ZOOM_TOTAL = 8; // Zoom máximo total na imagem de zoom
+
+        // Funções do Modal de Microscópio
+        function openMicroscopeModal() {
+            const modal = document.getElementById('microscopeModal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                // Reset zoom e posição ao abrir
+                currentZoom = 1;
+                imagePosition = { x: 0, y: 0 };
+                isMaxZoomImage = false;
+                updateMicroscopeImage();
+                updateZoomControls();
+            }
+        }
+
+        function closeMicroscopeModal(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            const modal = document.getElementById('microscopeModal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+                // Reset ao fechar
+                currentZoom = 1;
+                imagePosition = { x: 0, y: 0 };
+                isRealMode = false;
+                isMaxZoomImage = false;
+                updateMicroscopeImage();
+            }
+        }
+
+        function toggleMicroscopeImage(event) {
+            // Prevenir comportamento padrão e propagação
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            isRealMode = !isRealMode;
+            isMaxZoomImage = false; // Reset estado de zoom máximo
+            const btn = document.getElementById('toggleImageBtn');
+            const img = document.getElementById('microscopeImage');
+            
+            if (!img || !btn) return;
+            
+            // Aplicar blur durante a transição
+            img.style.filter = 'blur(3px)';
+            img.style.transition = 'filter 0.3s ease';
+            
+            if (isRealMode) {
+                img.src = 'IMG/bacmic-real.webp';
+                btn.textContent = 'Modo Ilustrado';
+            } else {
+                img.src = 'IMG/bacmic.webp';
+                btn.textContent = 'Modo Real';
+            }
+            
+            // Remover blur após carregar imagem
+            if (img.complete) {
+                setTimeout(() => {
+                    img.style.filter = 'contrast(1.15) brightness(0.9)';
+                    img.style.transition = 'filter 0.5s ease, transform 0.3s ease';
+                }, 200);
+            } else {
+                img.onload = () => {
+                    setTimeout(() => {
+                        img.style.filter = 'contrast(1.15) brightness(0.9)';
+                        img.style.transition = 'filter 0.5s ease, transform 0.3s ease';
+                    }, 200);
+                };
+            }
+            
+            // Reset zoom ao trocar imagem
+            currentZoom = 1;
+            imagePosition = { x: 0, y: 0 };
+            updateMicroscopeImage();
+            updateZoomControls();
+        }
+
+        function zoomMicroscope(delta) {
+            const img = document.getElementById('microscopeImage');
+            if (!img) return;
+
+            // Se delta for 0, apenas verifica se precisa trocar de imagem sem alterar zoom
+            if (delta === 0) {
+                if (isRealMode && !isMaxZoomImage && currentZoom >= MAX_ZOOM_BEFORE_SWITCH) {
+                    // Forçar troca para imagem de zoom
+                    img.style.filter = 'blur(4px) contrast(1.15) brightness(0.9)';
+                    setTimeout(() => {
+                        isMaxZoomImage = true;
+                        // Definir zoom em 1x antes de trocar a imagem
+                        currentZoom = 1;
+                        imagePosition = { x: 0, y: 0 };
+                        
+                        // Atualizar controles imediatamente
+                        updateZoomControls();
+                        
+                        // Trocar a imagem
+                        img.src = 'IMG/bacmic-real-z.webp';
+                        
+                        // Garantir que a imagem apareça em 1x quando carregar
+                        const ensureZoomOnLoad = () => {
+                            currentZoom = 1;
+                            imagePosition = { x: 0, y: 0 };
+                            updateMicroscopeImage();
+                            updateZoomControls();
+                            // Remover blur após carregar
+                            setTimeout(() => {
+                                img.style.filter = 'blur(0px) contrast(1.15) brightness(0.9)';
+                            }, 100);
+                        };
+                        
+                        // Aplicar zoom imediatamente
+                        updateMicroscopeImage();
+                        
+                        // Garantir que quando a imagem carregar, esteja em 1x
+                        if (img.complete) {
+                            ensureZoomOnLoad();
+                        } else {
+                            img.onload = ensureZoomOnLoad;
+                        }
+                    }, 200);
+                } else if (isRealMode && isMaxZoomImage && currentZoom <= 1) {
+                    // Forçar volta para imagem normal
+                    img.style.filter = 'blur(4px) contrast(1.15) brightness(0.9)';
+                    setTimeout(() => {
+                        isMaxZoomImage = false;
+                        img.src = 'IMG/bacmic-real.webp';
+                        currentZoom = MAX_ZOOM_BEFORE_SWITCH;
+                        imagePosition = { x: 0, y: 0 };
+                        const removeBlur = () => {
+                            setTimeout(() => {
+                                img.style.filter = 'blur(0px) contrast(1.15) brightness(0.9)';
+                                updateMicroscopeImage();
+                                updateZoomControls();
+                            }, 100);
+                        };
+                        if (img.complete) removeBlur();
+                        else img.onload = removeBlur;
+                    }, 200);
+                }
+                return;
+            }
+
+            // Determinar o zoom máximo baseado no estado atual
+            let maxZoom;
+            if (isRealMode && !isMaxZoomImage) {
+                maxZoom = MAX_ZOOM_BEFORE_SWITCH;
+            } else if (isRealMode && isMaxZoomImage) {
+                maxZoom = MAX_ZOOM_TOTAL;
+            } else {
+                maxZoom = MAX_ZOOM_BEFORE_SWITCH;
+            }
+
+            const newZoom = Math.max(1, Math.min(maxZoom, currentZoom + delta));
+            const previousZoom = currentZoom;
+            currentZoom = newZoom;
+
+            // Verificar se precisa trocar para imagem de zoom máximo
+            if (isRealMode && !isMaxZoomImage && currentZoom >= MAX_ZOOM_BEFORE_SWITCH) {
+                // Aplicar blur antes de trocar
+                img.style.filter = 'blur(4px) contrast(1.15) brightness(0.9)';
+                img.style.transition = 'filter 0.4s ease';
+                
+                // Trocar para imagem de zoom máximo
+                setTimeout(() => {
+                    isMaxZoomImage = true;
+                    // Definir zoom em 1x antes de trocar a imagem
+                    currentZoom = 1;
+                    imagePosition = { x: 0, y: 0 };
+                    
+                    // Atualizar controles imediatamente
+                    updateZoomControls();
+                    
+                    // Trocar a imagem
+                    img.src = 'IMG/bacmic-real-z.webp';
+                    
+                    // Garantir que a imagem apareça em 1x quando carregar
+                    const ensureZoomOnLoad = () => {
+                        currentZoom = 1;
+                        imagePosition = { x: 0, y: 0 };
+                        updateMicroscopeImage();
+                        updateZoomControls();
+                        // Remover blur após carregar
+                        setTimeout(() => {
+                            img.style.filter = 'blur(0px) contrast(1.15) brightness(0.9)';
+                            img.style.transition = 'filter 0.6s ease, transform 0.3s ease';
+                        }, 100);
+                    };
+                    
+                    // Aplicar zoom imediatamente
+                    updateMicroscopeImage();
+                    
+                    // Garantir que quando a imagem carregar, esteja em 1x
+                    if (img.complete) {
+                        ensureZoomOnLoad();
+                    } else {
+                        img.onload = ensureZoomOnLoad;
+                    }
+                }, 200);
+                // Atualizar controles imediatamente após trocar
+                updateZoomControls();
+                return; // Sair da função para não aplicar blur duplo
+            } else if (isRealMode && isMaxZoomImage && currentZoom <= 1) {
+                // Aplicar blur antes de voltar (quando zoom for 1x ou menor, volta para imagem normal)
+                img.style.filter = 'blur(4px) contrast(1.15) brightness(0.9)';
+                img.style.transition = 'filter 0.4s ease';
+                
+                // Voltar para imagem normal quando zoom diminuir para 1x
+                setTimeout(() => {
+                    isMaxZoomImage = false;
+                    img.src = 'IMG/bacmic-real.webp';
+                    // Voltar para zoom máximo da imagem anterior (5x) para manter continuidade
+                    currentZoom = MAX_ZOOM_BEFORE_SWITCH;
+                    imagePosition = { x: 0, y: 0 }; // Reset posição ao voltar
+                    
+                    const removeBlur2 = () => {
+                        setTimeout(() => {
+                            img.style.filter = 'blur(0px) contrast(1.15) brightness(0.9)';
+                            img.style.transition = 'filter 0.6s ease, transform 0.3s ease';
+                            updateMicroscopeImage();
+                            updateZoomControls();
+                        }, 100);
+                    };
+                    
+                    if (img.complete) {
+                        removeBlur2();
+                    } else {
+                        img.onload = removeBlur2;
+                    }
+                }, 200);
+                // Atualizar controles imediatamente após trocar
+                updateZoomControls();
+                return; // Sair da função para não aplicar blur duplo
+            } else {
+                // Aplicar blur sutil durante zoom normal apenas se a mudança for significativa
+                if (Math.abs(delta) > 0.05) {
+                    img.style.filter = 'blur(1px) contrast(1.15) brightness(0.9)';
+                    setTimeout(() => {
+                        img.style.filter = 'blur(0px) contrast(1.15) brightness(0.9)';
+                    }, 150);
+                }
+            }
+
+            updateMicroscopeImage();
+            updateZoomControls();
+        }
+
+        function updateMicroscopeImage() {
+            const img = document.getElementById('microscopeImage');
+            if (img) {
+                // Ajustar escala baseado no estado da imagem
+                let scale = currentZoom;
+                if (isRealMode && isMaxZoomImage) {
+                    // Na imagem de zoom, o zoom começa em 1x (zoom-out total) e pode ir até 8x
+                    scale = currentZoom;
+                }
+                
+                img.style.transform = `scale(${scale}) translate(${imagePosition.x / scale}px, ${imagePosition.y / scale}px)`;
+                
+                if (currentZoom > 1) {
+                    img.classList.add('zoomed');
+                } else {
+                    img.classList.remove('zoomed');
+                    imagePosition = { x: 0, y: 0 };
+                }
+            }
+        }
+
+        function updateZoomControls() {
+            const indicator = document.getElementById('zoomIndicator');
+            const zoomOutBtn = document.getElementById('zoomOutBtn');
+            const zoomInBtn = document.getElementById('zoomInBtn');
+            
+            // Determinar o zoom máximo baseado no estado atual
+            let maxZoom;
+            if (isRealMode && !isMaxZoomImage) {
+                maxZoom = MAX_ZOOM_BEFORE_SWITCH;
+            } else if (isRealMode && isMaxZoomImage) {
+                maxZoom = MAX_ZOOM_TOTAL;
+            } else {
+                maxZoom = MAX_ZOOM_BEFORE_SWITCH;
+            }
+            
+            if (indicator) {
+                indicator.textContent = Math.round(currentZoom * 100) + '%';
+            }
+            
+            if (zoomOutBtn) {
+                zoomOutBtn.disabled = currentZoom <= 1;
+            }
+            
+            if (zoomInBtn) {
+                zoomInBtn.disabled = currentZoom >= maxZoom;
+            }
+        }
+
+        // Controle de arrastar imagem quando zoomado
+        document.addEventListener('DOMContentLoaded', () => {
+            // Configurar event listeners para o botão de toggle
+            const toggleBtn = document.getElementById('toggleImageBtn');
+            if (toggleBtn) {
+                // Adicionar múltiplos tipos de eventos para garantir compatibilidade
+                toggleBtn.addEventListener('click', toggleMicroscopeImage);
+                toggleBtn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleMicroscopeImage(e);
+                });
+                // Garantir que não haja duplo disparo
+                let touchHandled = false;
+                toggleBtn.addEventListener('touchstart', (e) => {
+                    touchHandled = false;
+                });
+            }
+            
+            // Configurar event listeners para os botões de zoom
+            const zoomOutBtn = document.getElementById('zoomOutBtn');
+            const zoomInBtn = document.getElementById('zoomInBtn');
+            
+            if (zoomOutBtn) {
+                zoomOutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zoomMicroscope(-0.2);
+                });
+                zoomOutBtn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zoomMicroscope(-0.2);
+                });
+            }
+            
+            if (zoomInBtn) {
+                zoomInBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zoomMicroscope(0.2);
+                });
+                zoomInBtn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zoomMicroscope(0.2);
+                });
+            }
+            
+            const container = document.getElementById('microscopeImageContainer');
+            const img = document.getElementById('microscopeImage');
+            
+            if (container && img) {
+                container.addEventListener('mousedown', (e) => {
+                    if (currentZoom > 1) {
+                        isDragging = true;
+                        dragStart.x = e.clientX - imagePosition.x;
+                        dragStart.y = e.clientY - imagePosition.y;
+                        container.style.cursor = 'grabbing';
+                    }
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging && currentZoom > 1) {
+                        imagePosition.x = e.clientX - dragStart.x;
+                        imagePosition.y = e.clientY - dragStart.y;
+                        updateMicroscopeImage();
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        if (container) {
+                            container.style.cursor = 'grab';
+                        }
+                    }
+                });
+
+                // Zoom com scroll do mouse
+                container.addEventListener('wheel', (e) => {
+                    // Determinar o zoom máximo baseado no estado atual
+                    let maxZoom;
+                    if (isRealMode && !isMaxZoomImage) {
+                        maxZoom = MAX_ZOOM_BEFORE_SWITCH;
+                    } else if (isRealMode && isMaxZoomImage) {
+                        maxZoom = MAX_ZOOM_TOTAL;
+                    } else {
+                        maxZoom = MAX_ZOOM_BEFORE_SWITCH;
+                    }
+                    
+                    // Permitir zoom se não estiver nos limites ou se estiver aumentando/diminuindo dentro dos limites
+                    const canZoomIn = e.deltaY < 0 && currentZoom < maxZoom;
+                    const canZoomOut = e.deltaY > 0 && currentZoom > 1;
+                    
+                    if (canZoomIn || canZoomOut) {
+                        e.preventDefault();
+                        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                        zoomMicroscope(delta);
+                    }
+                }, { passive: false });
+
+                // Touch events para mobile
+                let touchStartDistance = 0;
+                let initialZoom = 1;
+
+                container.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 2) {
+                        e.preventDefault();
+                        const touch1 = e.touches[0];
+                        const touch2 = e.touches[1];
+                        touchStartDistance = Math.hypot(
+                            touch2.clientX - touch1.clientX,
+                            touch2.clientY - touch1.clientY
+                        );
+                        initialZoom = currentZoom;
+                    } else if (e.touches.length === 1 && currentZoom > 1) {
+                        isDragging = true;
+                        dragStart.x = e.touches[0].clientX - imagePosition.x;
+                        dragStart.y = e.touches[0].clientY - imagePosition.y;
+                    }
+                });
+
+                container.addEventListener('touchmove', (e) => {
+                    if (e.touches.length === 2) {
+                        e.preventDefault();
+                        const touch1 = e.touches[0];
+                        const touch2 = e.touches[1];
+                        const touchDistance = Math.hypot(
+                            touch2.clientX - touch1.clientX,
+                            touch2.clientY - touch1.clientY
+                        );
+                        const zoomDelta = (touchDistance - touchStartDistance) / 100;
+                        
+                        // Determinar o zoom máximo baseado no estado atual
+                        let maxZoom;
+                        if (isRealMode && !isMaxZoomImage) {
+                            maxZoom = MAX_ZOOM_BEFORE_SWITCH;
+                        } else if (isRealMode && isMaxZoomImage) {
+                            maxZoom = MAX_ZOOM_TOTAL;
+                        } else {
+                            maxZoom = MAX_ZOOM_BEFORE_SWITCH;
+                        }
+                        
+                        const newZoom = Math.max(1, Math.min(maxZoom, initialZoom + zoomDelta));
+                        const delta = newZoom - currentZoom;
+                        if (Math.abs(delta) > 0.05) {
+                            currentZoom = newZoom;
+                            updateMicroscopeImage();
+                            updateZoomControls();
+                            
+                            // Verificar se precisa trocar de imagem durante o pinch
+                            if (isRealMode && !isMaxZoomImage && currentZoom >= MAX_ZOOM_BEFORE_SWITCH) {
+                                // Forçar troca para imagem de zoom
+                                const img = document.getElementById('microscopeImage');
+                                if (img) {
+                                    img.style.filter = 'blur(4px) contrast(1.15) brightness(0.9)';
+                                    setTimeout(() => {
+                                        isMaxZoomImage = true;
+                                        // Definir zoom em 1x antes de trocar a imagem
+                                        currentZoom = 1;
+                                        imagePosition = { x: 0, y: 0 };
+                                        
+                                        // Atualizar controles imediatamente
+                                        updateZoomControls();
+                                        
+                                        // Trocar a imagem
+                                        img.src = 'bacmic-real-z.webp';
+                                        
+                                        // Garantir que a imagem apareça em 1x quando carregar
+                                        const ensureZoomOnLoad = () => {
+                                            currentZoom = 1;
+                                            imagePosition = { x: 0, y: 0 };
+                                            updateMicroscopeImage();
+                                            updateZoomControls();
+                                            // Remover blur após carregar
+                                            setTimeout(() => {
+                                                img.style.filter = 'blur(0px) contrast(1.15) brightness(0.9)';
+                                            }, 100);
+                                        };
+                                        
+                                        // Aplicar zoom imediatamente
+                                        updateMicroscopeImage();
+                                        
+                                        // Garantir que quando a imagem carregar, esteja em 1x
+                                        if (img.complete) {
+                                            ensureZoomOnLoad();
+                                        } else {
+                                            img.onload = ensureZoomOnLoad;
+                                        }
+                                    }, 200);
+                                }
+                            } else if (isRealMode && isMaxZoomImage && currentZoom <= 1) {
+                                // Forçar volta para imagem normal
+                                const img = document.getElementById('microscopeImage');
+                                if (img) {
+                                    img.style.filter = 'blur(4px) contrast(1.15) brightness(0.9)';
+                                    setTimeout(() => {
+                                        isMaxZoomImage = false;
+                                        img.src = 'bacmic-real.webp';
+                                        currentZoom = MAX_ZOOM_BEFORE_SWITCH;
+                                        imagePosition = { x: 0, y: 0 };
+                                        const removeBlur = () => {
+                                            setTimeout(() => {
+                                                img.style.filter = 'blur(0px) contrast(1.15) brightness(0.9)';
+                                                updateMicroscopeImage();
+                                                updateZoomControls();
+                                            }, 100);
+                                        };
+                                        if (img.complete) removeBlur();
+                                        else img.onload = removeBlur;
+                                    }, 200);
+                                }
+                            }
+                        }
+                    } else if (e.touches.length === 1 && isDragging && currentZoom > 1) {
+                        e.preventDefault();
+                        imagePosition.x = e.touches[0].clientX - dragStart.x;
+                        imagePosition.y = e.touches[0].clientY - dragStart.y;
+                        updateMicroscopeImage();
+                    }
+                });
+
+                container.addEventListener('touchend', () => {
+                    isDragging = false;
+                    touchStartDistance = 0;
+                });
+            }
+
+            // Tornar os emojis de lista clicáveis também
+            const listItems = document.querySelectorAll('li');
+            listItems.forEach(li => {
+                li.style.cursor = 'pointer';
+                li.addEventListener('click', (e) => {
+                    // Verifica se o clique foi próximo ao início (onde está o emoji)
+                    const rect = li.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    if (clickX < 40) { // Área do emoji
+                        openMicroscopeModal();
+                    }
+                });
+            });
+        });
+
+        // Fechar modal com tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMicroscopeModal();
+            }
+        });
+    </script>
+</body>
+</html>
